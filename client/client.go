@@ -1,12 +1,29 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net"
+	"os"
 )
 
+func read(conn net.Conn) {
+	reader := bufio.NewReader(conn)
+	msg, _ := reader.ReadString('\n')
+	fmt.Println(msg)
+}
+
 func main() {
-	msg := "Here is a message"
-	conn, _ := net.Dial("tcp", "127.0.0.1:8083")
-	fmt.Fprintln(conn, msg)
+	stdin := bufio.NewReader(os.Stdin)
+	conn, _ := net.Dial("tcp", "127.0.0.1:8030")
+
+	for {
+		fmt.Printf("Enter text: ")
+		msg, _ := stdin.ReadString('\n')
+		_, err := fmt.Fprintln(conn, msg)
+		if err != nil {
+			panic(err)
+		}
+		read(conn)
+	}
 }
